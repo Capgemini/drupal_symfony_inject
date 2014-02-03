@@ -1,0 +1,116 @@
+<?php
+/**
+ * @file
+ * drupal_symfony_inject helper functions.
+ */
+
+// Add the Symfony components.
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\ClassLoader\ClassLoader;
+
+/**
+ * Load Yaml Config.
+ *
+ * Load the YAML Configuration files for Symfony.
+ */
+function drupal_symfony_inject_load_yaml_config() {
+  // Get the container from ContainerBuilder.
+  $container_builder = new ContainerBuilder();
+
+  // Load Symfony Yaml config files defined in the modules.
+  $symfony_yaml_files = module_invoke_all('symfony_yaml_config');
+
+  if (!empty($symfony_yaml_files)) {
+    foreach ($symfony_yaml_files as $symfony_yaml_file_name => $symfony_yaml_file_path) {
+      if (file_exists("$symfony_yaml_file_path/$symfony_yaml_file_name")) {
+        // Register the Yaml config files.
+        // YAML Loader.
+        $yaml_loader = new YamlFileLoader($container_builder, new FileLocator($symfony_yaml_file_path));
+        $yaml_loader->load($symfony_yaml_file_name);
+      }
+    }
+  }
+
+  // Add build params.
+  $build_yaml_config_params = module_invoke_all('symfony_yaml_config_params', $container_builder);
+
+  if (!empty($build_yaml_config_params)) {
+    foreach ($build_yaml_config_params as $param_key => $param_value) {
+      if (!empty($param_key)) {
+        $container_builder->setParameter($param_key, $param_value);
+      }
+    }
+  }
+
+  // Last chance to do any additions to the container before compiling.
+  drupal_alter('symfony_container_builder_alter', $container_builder);
+
+  // Compile the container.
+  $container_builder->compile();
+
+  // Return the containet builder.
+  return $container_builder;
+}
+
+/**
+ * Helper function which resgutered the class loader.
+ */
+function drupal_symfony_inject_register_class_loader() {
+  // Initiate Class Loader.
+  $class_loader = new ClassLoader();
+
+  // Invoke the namespaces defined by other modules.
+  $custom_namespaces = cache_get(SYMFONY_CLASS_LOADER_RESGITER_CACHE_KEY);
+  $custom_namespaces = isset($custom_namespaces->data) ? $custom_namespaces->data : FALSE;
+
+  if (!$custom_namespaces) {
+    // Using hook_namespace_register.
+    $custom_namespaces = module_invoke_all('namespace_register');
+    cache_set(SYMFONY_CLASS_LOADER_RESGITER_CACHE_KEY, $custom_namespaces);
+  }
+
+  if (!empty($custom_namespaces)) {
+    foreach ($custom_namespaces as $custom_namespace => $path) {
+      if (!empty($custom_namespace)) {
+        $class_loader->addPrefix($custom_namespace, $path);
+      }
+    }
+
+    // Register namespace.
+    $class_loader->register();
+  }
+}
+
+/**
+ * Get the Symfony container manager.
+ */
+function drupal_symfony_inject_get_container_builder() {
+  $symfony_container_builder = cache_get(SYMFONY_DI_CONTAINER_CACHE_KEY);
+
+  if (
+    isset($symfony_container_builder->data) &&
+    !empty($symfony_container_builder->data) &&
+    $symfony_container_builder->data instanceof ContainerBuilder
+  ) {
+    return $symfony_container_builder;
+  }
+
+  // Build the container.
+  $symfony_container_builder = drupal_symfony_inject_load_yaml_config();
+
+  if (
+    !empty($symfony_container_builder) &&
+    $symfony_container_builder instanceof ContainerBuilder
+  ) {
+    cache_set(SYMFONY_DI_CONTAINER_CACHE_KEY, $symfony_container_builder);
+  }
+
+  return $symfony_container_builder;
+}
+
+
+
+
+

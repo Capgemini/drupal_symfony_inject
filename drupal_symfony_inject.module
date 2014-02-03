@@ -1,0 +1,25 @@
+<?php
+/**
+ * @file
+ * Symfony Dependency Container for Drupal 7.
+ */
+
+// Cache key for the dependency injection.
+define('SYMFONY_DI_CONTAINER_CACHE_KEY', 'symfony_di_container_cache_key');
+define('SYMFONY_CLASS_LOADER_RESGITER_CACHE_KEY', 'symfony_class_loader_register_cache_key');
+
+/**
+ * Implements hook_init().
+ */
+function drupal_symfony_inject_init() {
+  global $_drupal_symfony_di_container;
+
+  // Add the file which defines the helpers.
+  module_load_include('inc', 'drupal_symfony_inject', 'helpers/drupal_symfony_inject.helpers');
+
+  // Register namespaces.
+  drupal_symfony_inject_register_class_loader();
+
+  // Initialize global Dymfony di container.
+  $_drupal_symfony_di_container = drupal_symfony_inject_get_container_builder();
+}
