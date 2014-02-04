@@ -57,14 +57,19 @@ function drupal_symfony_inject_load_yaml_config() {
 /**
  * Helper function which resgutered the class loader.
  */
-function drupal_symfony_inject_register_class_loader() {
+function drupal_symfony_inject_register_class_loader($reset = FALSE) {
   // Initiate Class Loader.
+  $custom_namespaces = NULL;
   $class_loader = new ClassLoader();
 
-  // Invoke the namespaces defined by other modules.
-  $custom_namespaces = cache_get(SYMFONY_CLASS_LOADER_RESGITER_CACHE_KEY);
-  $custom_namespaces = isset($custom_namespaces->data) ? $custom_namespaces->data : FALSE;
+  // If not a reset, try and load the class loader from cache.
+  if ($reset == FALSE) {
+    // Invoke the namespaces defined by other modules.
+    $custom_namespaces = cache_get(SYMFONY_CLASS_LOADER_RESGITER_CACHE_KEY);
+    $custom_namespaces = isset($custom_namespaces->data) ? $custom_namespaces->data : FALSE;
+  }
 
+  // Rebuild the namespaces set it on cache.
   if (!$custom_namespaces) {
     // Using hook_namespace_register.
     $custom_namespaces = module_invoke_all('namespace_register');
@@ -87,30 +92,37 @@ function drupal_symfony_inject_register_class_loader() {
  * Get the Symfony container manager.
  */
 function drupal_symfony_inject_get_container_builder() {
-  $symfony_container_builder = cache_get(SYMFONY_DI_CONTAINER_CACHE_KEY);
+  static $symfony_container_builder;
 
-  if (
-    isset($symfony_container_builder->data) &&
-    !empty($symfony_container_builder->data) &&
-    $symfony_container_builder->data instanceof ContainerBuilder
-  ) {
-    return $symfony_container_builder;
-  }
+  if (!isset($symfony_container_builder)) {
+    $symfony_container_builder = cache_get(SYMFONY_DI_CONTAINER_CACHE_KEY);
 
-  // Build the container.
-  $symfony_container_builder = drupal_symfony_inject_load_yaml_config();
+    if (
+      isset($symfony_container_builder->data) &&
+      $symfony_container_builder->data instanceof ContainerBuilder
+    ) {
+      return $symfony_container_builder->data;
+    }
 
-  if (
-    !empty($symfony_container_builder) &&
-    $symfony_container_builder instanceof ContainerBuilder
-  ) {
-    cache_set(SYMFONY_DI_CONTAINER_CACHE_KEY, $symfony_container_builder);
+    // Build the container.
+    $symfony_container_builder = drupal_symfony_inject_load_yaml_config();
+
+    if (
+      isset($symfony_container_builder) &&
+      $symfony_container_builder instanceof ContainerBuilder
+    ) {
+      cache_set(SYMFONY_DI_CONTAINER_CACHE_KEY, $symfony_container_builder);
+    }
   }
 
   return $symfony_container_builder;
 }
 
-
-
+/**
+ * Flush the cached Symfony container.
+ */
+function drupal_symfony_inject_flush_container() {
+  cache_clear_all(SYMFONY_DI_CONTAINER_CACHE_KEY, 'cache');
+}
 
 

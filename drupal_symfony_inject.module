@@ -8,6 +8,8 @@
 define('SYMFONY_DI_CONTAINER_CACHE_KEY', 'symfony_di_container_cache_key');
 define('SYMFONY_CLASS_LOADER_RESGITER_CACHE_KEY', 'symfony_class_loader_register_cache_key');
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
 /**
  * Implements hook_init().
  */
@@ -20,6 +22,6 @@ function drupal_symfony_inject_init() {
   // Register namespaces.
   drupal_symfony_inject_register_class_loader();
 
-  // Initialize global Dymfony di container.
+  // Initialize global Symfony di container.
   $_drupal_symfony_di_container = drupal_symfony_inject_get_container_builder();
 }
