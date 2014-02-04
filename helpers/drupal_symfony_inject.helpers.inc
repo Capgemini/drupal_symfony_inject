@@ -50,7 +50,7 @@ function drupal_symfony_inject_load_yaml_config() {
   // Compile the container.
   $container_builder->compile();
 
-  // Return the containet builder.
+  // Return the Container Builder.
   return $container_builder;
 }
 
