@@ -101,17 +101,18 @@ function drupal_symfony_inject_get_container_builder() {
       isset($symfony_container_builder->data) &&
       $symfony_container_builder->data instanceof ContainerBuilder
     ) {
-      return $symfony_container_builder->data;
+      $symfony_container_builder = $symfony_container_builder->data;
     }
+    else {
+      // Build the container.
+      $symfony_container_builder = drupal_symfony_inject_load_yaml_config();
 
-    // Build the container.
-    $symfony_container_builder = drupal_symfony_inject_load_yaml_config();
-
-    if (
-      isset($symfony_container_builder) &&
-      $symfony_container_builder instanceof ContainerBuilder
-    ) {
-      cache_set(SYMFONY_DI_CONTAINER_CACHE_KEY, $symfony_container_builder);
+      if (
+        isset($symfony_container_builder) &&
+        $symfony_container_builder instanceof ContainerBuilder
+      ) {
+        cache_set(SYMFONY_DI_CONTAINER_CACHE_KEY, $symfony_container_builder);
+      }
     }
   }
 
@@ -124,5 +125,6 @@ function drupal_symfony_inject_get_container_builder() {
 function drupal_symfony_inject_flush_container() {
   cache_clear_all(SYMFONY_DI_CONTAINER_CACHE_KEY, 'cache');
 }
+
 
 
