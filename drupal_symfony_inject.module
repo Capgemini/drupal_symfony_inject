@@ -14,14 +14,19 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * Implements hook_init().
  */
 function drupal_symfony_inject_init() {
-  global $_drupal_symfony_di_container;
+  if (class_exists('ClassLoader') && class_exists('ContainerBuilder')) {
+    global $_drupal_symfony_di_container;
 
-  // Add the file which defines the helpers.
-  module_load_include('inc', 'drupal_symfony_inject', 'helpers/drupal_symfony_inject.helpers');
+    // Add the file which defines the helpers.
+    module_load_include('inc', 'drupal_symfony_inject', 'helpers/drupal_symfony_inject.helpers');
 
-  // Register namespaces.
-  drupal_symfony_inject_register_class_loader();
+    // Register namespaces.
+    drupal_symfony_inject_register_class_loader();
 
-  // Initialize global Symfony di container.
-  $_drupal_symfony_di_container = drupal_symfony_inject_get_container_builder();
+    // Initialize global Symfony di container.
+    $_drupal_symfony_di_container = drupal_symfony_inject_get_container_builder();
+  }
+  else {
+    watchdog('drupal_symfony_inject', 'Symfony ClassLoader not found.', array(), WATCHDOG_ERROR);
+  }
 }
