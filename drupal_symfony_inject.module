@@ -8,13 +8,14 @@
 define('SYMFONY_DI_CONTAINER_CACHE_KEY', 'symfony_di_container_cache_key');
 define('SYMFONY_CLASS_LOADER_RESGITER_CACHE_KEY', 'symfony_class_loader_register_cache_key');
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-
 /**
  * Implements hook_init().
  */
 function drupal_symfony_inject_init() {
-  if (class_exists('ClassLoader') && class_exists('ContainerBuilder')) {
+  if (
+    class_exists('Symfony\Component\ClassLoader\ClassLoader') &&
+    class_exists('Symfony\Component\DependencyInjection\ContainerBuilder')
+  ) {
     global $_drupal_symfony_di_container;
 
     // Add the file which defines the helpers.
