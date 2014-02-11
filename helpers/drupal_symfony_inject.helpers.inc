@@ -83,6 +83,9 @@ function drupal_symfony_inject_register_class_loader($reset = FALSE) {
       }
     }
 
+    // Use the include path.
+    $class_loader->setUseIncludePath(TRUE);
+
     // Register namespace.
     $class_loader->register();
   }

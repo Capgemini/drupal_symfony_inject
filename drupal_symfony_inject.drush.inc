@@ -9,7 +9,7 @@
  * @see drush_drupal_symfony_inject_rebuild_symfony_container()
  */
 function drupal_symfony_inject_drush_command() {
-  $items['rebuild-symfony-container'] = array(
+  $items['rebuild_symfony_container'] = array(
     'description' => dt('Rebuild the Symfony container, compile and set cache.'),
     'examples' => array(
       'rebuild-symfony-container' => 'drush rebuild-symfony-container',
