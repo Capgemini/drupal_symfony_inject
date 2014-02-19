@@ -25,9 +25,17 @@ function drupal_symfony_inject_drush_command() {
  */
 function drush_drupal_symfony_inject_rebuild_symfony_container() {
   require_once drupal_get_path('module', 'drupal_symfony_inject') . '/drupal_symfony_inject.module';
+  require_once drupal_get_path('module', 'drupal_symfony_inject') . '/helpers/drupal_symfony_inject.helpers.inc';
 
+  drush_print('Clear the current container from cache.');
+  drupal_symfony_inject_flush_container();
+
+  // We need to see whether container compilation has any errors. Therefore
+  // we are not wrapping drupal_symfony_inject_register_class_loader around
+  // a try catch block.
   drush_print('Rebuild and Registering class loader.');
   drupal_symfony_inject_register_class_loader(TRUE);
+
   drush_print('Loading Yaml config with custom params.');
   $container_builder = drupal_symfony_inject_load_yaml_config();
 
@@ -42,4 +50,3 @@ function drush_drupal_symfony_inject_rebuild_symfony_container() {
     drush_print('Failed to compile and save the Symfont Container Builder.');
   }
 }
-

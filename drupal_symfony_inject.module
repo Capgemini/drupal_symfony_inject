@@ -18,14 +18,20 @@ function drupal_symfony_inject_init() {
   ) {
     global $_drupal_symfony_di_container;
 
-    // Add the file which defines the helpers.
-    module_load_include('inc', 'drupal_symfony_inject', 'helpers/drupal_symfony_inject.helpers');
-
-    // Register namespaces.
-    drupal_symfony_inject_register_class_loader();
-
     // Initialize global Symfony di container.
-    $_drupal_symfony_di_container = drupal_symfony_inject_get_container_builder();
+    try {
+      // Add the file which defines the helpers.
+      module_load_include('inc', 'drupal_symfony_inject', 'helpers/drupal_symfony_inject.helpers');
+
+      // Register namespaces.
+      drupal_symfony_inject_register_class_loader();
+
+      // Initialize the container and assign it to the global variable.
+      $_drupal_symfony_di_container = drupal_symfony_inject_get_container_builder();
+    }
+    catch(Exception $exp) {
+      watchdog_exception('drupal_symfony_inject', $exp);
+    }
   }
   else {
     watchdog('drupal_symfony_inject', 'Symfony ClassLoader not found.', array(), WATCHDOG_ERROR);
