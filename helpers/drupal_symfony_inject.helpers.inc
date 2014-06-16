@@ -39,9 +39,6 @@ function drupal_symfony_inject_load_yaml_config() {
   // Add build params.
   $build_yaml_config_params = module_invoke_all('symfony_yaml_config_params', $container_builder);
 
-  // Add build params.
-  $build_yaml_config_params = module_invoke_all('symfony_yaml_config_params', $container_builder);
-
   $definitions = $container_builder->getDefinitions();
   foreach ($definitions as $definition) {
     if ($definition->isLazy()) {
