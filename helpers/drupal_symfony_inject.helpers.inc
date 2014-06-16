@@ -41,6 +41,8 @@ function drupal_symfony_inject_load_yaml_config() {
 
   $definitions = $container_builder->getDefinitions();
   foreach ($definitions as $definition) {
+    // If we have the lazy set to true in the YAML, we'll need to initialise
+    // the class as Lazy.
     if ($definition->isLazy()) {
       if ($set_proxy_instantiator === FALSE) {
         $set_proxy_instantiator = TRUE;
