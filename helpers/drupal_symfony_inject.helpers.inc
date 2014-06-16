@@ -9,6 +9,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\ClassLoader\ClassLoader;
+use Symfony\Bridge\ProxyManager\LazyProxy\Instantiator\RuntimeInstantiator;
+
 
 /**
  * Load Yaml Config.
@@ -18,6 +20,7 @@ use Symfony\Component\ClassLoader\ClassLoader;
 function drupal_symfony_inject_load_yaml_config() {
   // Get the container from ContainerBuilder.
   $container_builder = new ContainerBuilder();
+  $set_proxy_instantiator = FALSE;
 
   // Load Symfony Yaml config files defined in the modules.
   $symfony_yaml_files = module_invoke_all('symfony_yaml_config');
@@ -35,6 +38,20 @@ function drupal_symfony_inject_load_yaml_config() {
 
   // Add build params.
   $build_yaml_config_params = module_invoke_all('symfony_yaml_config_params', $container_builder);
+
+  // Add build params.
+  $build_yaml_config_params = module_invoke_all('symfony_yaml_config_params', $container_builder);
+
+  $definitions = $container_builder->getDefinitions();
+  foreach ($definitions as $definition) {
+    if ($definition->isLazy()) {
+      if ($set_proxy_instantiator === FALSE) {
+        $set_proxy_instantiator = TRUE;
+        $container_builder->setProxyInstantiator(new RuntimeInstantiator());
+      }
+      $definition->setLazy(true);
+    }
+  }
 
   if (!empty($build_yaml_config_params)) {
     foreach ($build_yaml_config_params as $param_key => $param_value) {
