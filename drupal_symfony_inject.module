@@ -28,6 +28,12 @@ function drupal_symfony_inject_init() {
 
       // Initialize the container and assign it to the global variable.
       $_drupal_symfony_di_container = drupal_symfony_inject_get_container_builder();
+
+      $config = new \ProxyManager\Configuration();
+      $config->setProxiesTargetDir('/tmp/doctrine/proxies');
+
+      // then register the autoloader
+      spl_autoload_register($config->getProxyAutoloader());
     }
     catch(Exception $exp) {
       watchdog_exception('drupal_symfony_inject', $exp);
