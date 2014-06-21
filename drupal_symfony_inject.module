@@ -7,6 +7,7 @@
 // Cache key for the dependency injection.
 define('SYMFONY_DI_CONTAINER_CACHE_KEY', 'symfony_di_container_cache_key');
 define('SYMFONY_CLASS_LOADER_RESGITER_CACHE_KEY', 'symfony_class_loader_register_cache_key');
+define('SYMFONY_CLASS_LOADER_PROXIES_DIR', 'symfony_class_loader_proxies_dir');
 
 /**
  * Implements hook_init().
@@ -26,11 +27,13 @@ function drupal_symfony_inject_init() {
       // Register namespaces.
       drupal_symfony_inject_register_class_loader();
 
+      $proxies_path = variable_get(SYMFONY_CLASS_LOADER_PROXIES_DIR, '/tmp/doctrine/proxies');
+
       // Initialize the container and assign it to the global variable.
-      $_drupal_symfony_di_container = drupal_symfony_inject_get_container_builder();
+      $_drupal_symfony_di_container = drupal_symfony_inject_get_container_builder($proxies_path);
 
       $config = new \ProxyManager\Configuration();
-      $config->setProxiesTargetDir('/tmp/doctrine/proxies');
+      $config->setProxiesTargetDir($proxies_path);
 
       // then register the autoloader
       spl_autoload_register($config->getProxyAutoloader());

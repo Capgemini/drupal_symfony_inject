@@ -37,7 +37,8 @@ function drush_drupal_symfony_inject_rebuild_symfony_container() {
   drupal_symfony_inject_register_class_loader(TRUE);
 
   drush_print('Loading Yaml config with custom params.');
-  $container_builder = drupal_symfony_inject_load_yaml_config();
+  $proxies_path = variable_get(SYMFONY_CLASS_LOADER_PROXIES_DIR, '/tmp/doctrine/proxies');
+  $container_builder = drupal_symfony_inject_load_yaml_config($proxies_path);
 
   if (
     !empty($container_builder) &&

@@ -16,7 +16,7 @@ use Symfony\Bridge\ProxyManager\LazyProxy\Instantiator\RuntimeInstantiator;
  *
  * Load the YAML Configuration files for Symfony.
  */
-function drupal_symfony_inject_load_yaml_config() {
+function drupal_symfony_inject_load_yaml_config($proxies_path) {
   // Get the container from ContainerBuilder.
   $container_builder = new ContainerBuilder();
   $set_proxy_instantiator = FALSE;
@@ -45,7 +45,7 @@ function drupal_symfony_inject_load_yaml_config() {
     if ($definition->isLazy()) {
       if ($set_proxy_instantiator === FALSE) {
         $set_proxy_instantiator = TRUE;
-        $container_builder->setProxyInstantiator(new RuntimeInstantiator());
+        $container_builder->setProxyInstantiator(new RuntimeInstantiator($proxies_path));
       }
       $definition->setLazy(true);
     }
@@ -110,7 +110,7 @@ function drupal_symfony_inject_register_class_loader($reset = FALSE) {
 /**
  * Get the Symfony container manager.
  */
-function drupal_symfony_inject_get_container_builder() {
+function drupal_symfony_inject_get_container_builder($proxies_path) {
   static $symfony_container_builder;
 
   if (!isset($symfony_container_builder)) {
@@ -124,7 +124,7 @@ function drupal_symfony_inject_get_container_builder() {
     }
     else {
       // Build the container.
-      $symfony_container_builder = drupal_symfony_inject_load_yaml_config();
+      $symfony_container_builder = drupal_symfony_inject_load_yaml_config($proxies_path);
 
       if (
         isset($symfony_container_builder) &&
