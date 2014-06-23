@@ -12,7 +12,6 @@ use Symfony\Component\ClassLoader\ClassLoader;
 // Add our own implementation of a Cached Proxy Manager.
 use DrupalSymfonyInject\CachedInstantiator;
 
-
 /**
  * Load Yaml Config.
  *
@@ -42,14 +41,15 @@ function drupal_symfony_inject_load_yaml_config($proxies_path) {
 
   $definitions = $container_builder->getDefinitions();
   foreach ($definitions as $definition) {
-// If we have the lazy set to true in the YAML, we'll need to initialise
-// the class as Lazy.
+    // If we have the lazy set to true in the YAML, we'll need to initialise
+    // the class as Lazy.
     if ($definition->isLazy()) {
       if ($set_proxy_instantiator === FALSE) {
+        module_load_include('php', 'drupal_symfony_inject', 'lib/CachedInstantiator');
         $set_proxy_instantiator = TRUE;
         $container_builder->setProxyInstantiator(new CachedInstantiator($proxies_path));
       }
-      $definition->setLazy(true);
+      $definition->setLazy(TRUE);
     }
   }
 
