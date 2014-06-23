@@ -33,6 +33,7 @@ class CachedInstantiator implements InstantiatorInterface
     $config = new Configuration();
     $config->setProxiesTargetDir($proxies_path);
     $fileLocator = new FileLocator($config->getProxiesTargetDir());
+    $config->setProxiesNamespace('PM');
     $config->setGeneratorStrategy(new FileWriterGeneratorStrategy($fileLocator));
 
     $this->factory = new LazyLoadingValueHolderFactory($config);
