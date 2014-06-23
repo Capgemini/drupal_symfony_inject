@@ -5,3 +5,4 @@ package = Symfony
 php = 5.3.x
 
 dependencies[] = composer_manager
+files[] = lib/CachedInstantiator.php

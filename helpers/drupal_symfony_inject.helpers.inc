@@ -9,7 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\ClassLoader\ClassLoader;
-use Symfony\Bridge\ProxyManager\LazyProxy\Instantiator\RuntimeInstantiator;
+// Add our own implementation of a Cached Proxy Manager.
+use DrupalSymfonyInject\CachedInstantiator;
+
 
 /**
  * Load Yaml Config.
@@ -45,7 +47,7 @@ function drupal_symfony_inject_load_yaml_config($proxies_path) {
     if ($definition->isLazy()) {
       if ($set_proxy_instantiator === FALSE) {
         $set_proxy_instantiator = TRUE;
-        $container_builder->setProxyInstantiator(new RuntimeInstantiator($proxies_path));
+        $container_builder->setProxyInstantiator(new CachedInstantiator($proxies_path));
       }
       $definition->setLazy(true);
     }
