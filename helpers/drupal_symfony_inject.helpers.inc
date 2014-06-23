@@ -45,7 +45,6 @@ function drupal_symfony_inject_load_yaml_config($proxies_path) {
     // the class as Lazy.
     if ($definition->isLazy()) {
       if ($set_proxy_instantiator === FALSE) {
-        module_load_include('php', 'drupal_symfony_inject', 'lib/CachedInstantiator');
         $set_proxy_instantiator = TRUE;
         $container_builder->setProxyInstantiator(new CachedInstantiator($proxies_path));
       }

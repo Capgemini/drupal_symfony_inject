@@ -8,5 +8,10 @@
         "symfony/class-loader": "2.3.7",
         "symfony/http-kernel": "2.3.7",
         "symfony/event-dispatcher": "2.3.7"
+    },
+    "autoload": {
+        "psr-0": {
+            "DrupalSymfonyInject": "lib/"
+        }
     }
 }
