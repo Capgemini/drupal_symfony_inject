@@ -46,3 +46,10 @@ function drupal_symfony_inject_init() {
     watchdog('drupal_symfony_inject', 'Symfony ClassLoader not found.', array(), WATCHDOG_ERROR);
   }
 }
+
+/**
+ * Implements hook_flush_caches().
+ */
+function drupal_symfony_inject_flush_caches() {
+  drush_drupal_symfony_inject_clear_symfony_proxies();
+}
