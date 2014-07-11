@@ -29,6 +29,14 @@ function drupal_symfony_inject_drush_command() {
 }
 
 /**
+ * Implements hook_drush_cache_clear().
+ */
+function drupal_symfony_inject_drush_cache_clear(&$types) {
+  // Ensure that the Symfony proxy caches are flushed on cache clear.
+  $types['drupalsymfonyinject'] = 'drush_drupal_symfony_inject_clear_symfony_proxies';
+}
+
+/**
  * Drush command - drush_drupal_symfony_inject_rebuild_symfony_container.
  */
 function drush_drupal_symfony_inject_rebuild_symfony_container() {
