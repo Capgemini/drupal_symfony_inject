@@ -17,6 +17,14 @@ function drupal_symfony_inject_drush_command() {
     'aliases' => array('rsc'),
   );
 
+  $items['clear_symfony_proxies'] = array(
+    'description' => dt('Clear the generated Symfony lazy load proxies.'),
+    'examples' => array(
+      'clear_symfony_proxies' => 'drush clear_symfony_proxies',
+    ),
+    'aliases' => array('csp'),
+  );
+
   return $items;
 }
 
@@ -24,8 +32,10 @@ function drupal_symfony_inject_drush_command() {
  * Drush command - drush_drupal_symfony_inject_rebuild_symfony_container.
  */
 function drush_drupal_symfony_inject_rebuild_symfony_container() {
-  require_once drupal_get_path('module', 'drupal_symfony_inject') . '/drupal_symfony_inject.module';
-  require_once drupal_get_path('module', 'drupal_symfony_inject') . '/helpers/drupal_symfony_inject.helpers.inc';
+  require_once drupal_get_path('module', 'drupal_symfony_inject') .
+    '/drupal_symfony_inject.module';
+  require_once drupal_get_path('module', 'drupal_symfony_inject') .
+    '/helpers/drupal_symfony_inject.helpers.inc';
 
   drush_print('Clear the current container from cache.');
   drupal_symfony_inject_flush_container();
@@ -37,7 +47,8 @@ function drush_drupal_symfony_inject_rebuild_symfony_container() {
   drupal_symfony_inject_register_class_loader(TRUE);
 
   drush_print('Loading Yaml config with custom params.');
-  $proxies_path = variable_get(SYMFONY_CLASS_LOADER_PROXIES_DIR, '/tmp/doctrine/proxies');
+  $proxies_path = variable_get(SYMFONY_CLASS_LOADER_PROXIES_DIR,
+    '/tmp/doctrine/proxies');
   $container_builder = drupal_symfony_inject_load_yaml_config($proxies_path);
 
   if (
@@ -50,4 +61,13 @@ function drush_drupal_symfony_inject_rebuild_symfony_container() {
   else {
     drush_print('Failed to compile and save the Symfont Container Builder.');
   }
+}
+
+/**
+ * Clear the generated Symfony lazy load proxies.
+ */
+function drush_drupal_symfony_inject_clear_symfony_proxies() {
+  $proxies_cache_path = variable_get(SYMFONY_CLASS_LOADER_PROXIES_DIR, "/tmp/doctrine/proxies");
+  array_map('unlink', glob("$proxies_cache_path/*.php"));
+  watchdog('drupal_symfony_inject', "Symfony proxies cache cleared at $proxies_cache_path");
 }
