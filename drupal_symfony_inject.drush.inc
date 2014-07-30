@@ -40,10 +40,9 @@ function drupal_symfony_inject_drush_cache_clear(&$types) {
  * Drush command - drush_drupal_symfony_inject_rebuild_symfony_container.
  */
 function drush_drupal_symfony_inject_rebuild_symfony_container() {
-  require_once drupal_get_path('module', 'drupal_symfony_inject') .
-    '/drupal_symfony_inject.module';
-  require_once drupal_get_path('module', 'drupal_symfony_inject') .
-    '/helpers/drupal_symfony_inject.helpers.inc';
+  $module_path = drupal_get_path('module', 'drupal_symfony_inject');
+  require_once $module_path . '/drupal_symfony_inject.module';
+  require_once $module_path . '/helpers/drupal_symfony_inject.helpers.inc';
 
   drush_print('Clear the current container from cache.');
   drupal_symfony_inject_flush_container();
@@ -55,8 +54,7 @@ function drush_drupal_symfony_inject_rebuild_symfony_container() {
   drupal_symfony_inject_register_class_loader(TRUE);
 
   drush_print('Loading Yaml config with custom params.');
-  $proxies_path = variable_get(SYMFONY_CLASS_LOADER_PROXIES_DIR,
-    '/tmp/doctrine/proxies');
+  $proxies_path = variable_get(SYMFONY_CLASS_LOADER_PROXIES_DIR, '/tmp/doctrine/proxies');
   $container_builder = drupal_symfony_inject_load_yaml_config($proxies_path);
 
   if (
