@@ -20,7 +20,7 @@ function drupal_symfony_inject_drush_command() {
   $items['clear_symfony_proxies'] = array(
     'description' => dt('Clear the generated Symfony lazy load proxies.'),
     'examples' => array(
-      'clear_symfony_proxies' => 'drush clear_symfony_proxies',
+      'clear-symfony-proxies' => 'drush clear-symfony-proxies',
     ),
     'aliases' => array('csp'),
   );
