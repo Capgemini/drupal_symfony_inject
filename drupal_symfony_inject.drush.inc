@@ -33,7 +33,7 @@ function drupal_symfony_inject_drush_command() {
  */
 function drupal_symfony_inject_drush_cache_clear(&$types) {
   // Ensure that the Symfony proxy caches are flushed on cache clear.
-  $types['drupalsymfonyinject'] = 'drush_drupal_symfony_inject_clear_symfony_proxies';
+  $types['drupalsymfonyinject'] = 'drush_drupal_symfony_inject_cache_flush';
 }
 
 /**
@@ -72,8 +72,6 @@ function drush_drupal_symfony_inject_rebuild_symfony_container() {
 /**
  * Clear the generated Symfony lazy load proxies.
  */
-function drush_drupal_symfony_inject_clear_symfony_proxies() {
-  $proxies_cache_path = variable_get(SYMFONY_CLASS_LOADER_PROXIES_DIR, "/tmp/doctrine/proxies");
-  array_map('unlink', glob("$proxies_cache_path/*.php"));
-  watchdog('drupal_symfony_inject', "Symfony proxies cache cleared at $proxies_cache_path");
+function drush_drupal_symfony_inject_cache_flush() {
+  _drupal_symfony_inject_clear_symfony_proxies();
 }
