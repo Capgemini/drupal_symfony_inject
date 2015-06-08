@@ -1,10 +1,18 @@
 drupal_symfony_inject.module
 ============================
 
-Installation: Install the module as you would install a normal Drupal module.
+Installation
+============
+
+You must create a directory to store proxy classes. The default location of this
+directory is /tmp/doctrine/proxies, but you can specify an alternative via the
+following variable:
+
+    symfony_class_loader_proxies_dir
+
 
 Hooks
-======
+=====
 
 1. hook_namespace_register : Register custom namespaces you need from your
                              module. The implementation expects a key value paired
@@ -14,7 +22,7 @@ Hooks
 2. hook_symfony_yaml_config : Define custom paths to your Symfony DI Yaml config
                               files. Implementation should return an array with
                               key value pair, The key should be the Yaml file
-                              namespace and the value should be the path to the Yaml
+                              name and the value should be the path to the Yaml
                               file.
 
                               ex: array(

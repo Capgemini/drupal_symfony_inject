@@ -9,15 +9,18 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\ClassLoader\ClassLoader;
+// Add our own implementation of a Cached Proxy Manager.
+use DrupalSymfonyInject\CachedInstantiator;
 
 /**
  * Load Yaml Config.
  *
  * Load the YAML Configuration files for Symfony.
  */
-function drupal_symfony_inject_load_yaml_config() {
+function drupal_symfony_inject_load_yaml_config($proxies_path) {
   // Get the container from ContainerBuilder.
   $container_builder = new ContainerBuilder();
+  $set_proxy_instantiator = FALSE;
 
   // Load Symfony Yaml config files defined in the modules.
   $symfony_yaml_files = module_invoke_all('symfony_yaml_config');
@@ -35,6 +38,19 @@ function drupal_symfony_inject_load_yaml_config() {
 
   // Add build params.
   $build_yaml_config_params = module_invoke_all('symfony_yaml_config_params', $container_builder);
+
+  $definitions = $container_builder->getDefinitions();
+  foreach ($definitions as $definition) {
+    // If we have the lazy set to true in the YAML, we'll need to initialise
+    // the class as Lazy.
+    if ($definition->isLazy()) {
+      if ($set_proxy_instantiator === FALSE) {
+        $set_proxy_instantiator = TRUE;
+        $container_builder->setProxyInstantiator(new CachedInstantiator($proxies_path));
+      }
+      $definition->setLazy(TRUE);
+    }
+  }
 
   if (!empty($build_yaml_config_params)) {
     foreach ($build_yaml_config_params as $param_key => $param_value) {
@@ -88,13 +104,14 @@ function drupal_symfony_inject_register_class_loader($reset = FALSE) {
 
     // Register namespace.
     $class_loader->register();
+
   }
 }
 
 /**
  * Get the Symfony container manager.
  */
-function drupal_symfony_inject_get_container_builder() {
+function drupal_symfony_inject_get_container_builder($proxies_path) {
   static $symfony_container_builder;
 
   if (!isset($symfony_container_builder)) {
@@ -108,7 +125,7 @@ function drupal_symfony_inject_get_container_builder() {
     }
     else {
       // Build the container.
-      $symfony_container_builder = drupal_symfony_inject_load_yaml_config();
+      $symfony_container_builder = drupal_symfony_inject_load_yaml_config($proxies_path);
 
       if (
         isset($symfony_container_builder) &&
@@ -128,5 +145,3 @@ function drupal_symfony_inject_get_container_builder() {
 function drupal_symfony_inject_flush_container() {
   cache_clear_all(SYMFONY_DI_CONTAINER_CACHE_KEY, 'cache');
 }
-
-

@@ -1,4 +1,4 @@
-name = Drupal Symfony Inject
+name = Symfony Dependency Injection
 description = Symfony dependency injection for Drupal 7.
 core = 7.x
 package = Symfony
