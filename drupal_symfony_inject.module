@@ -39,7 +39,7 @@ function drupal_symfony_inject_init() {
       spl_autoload_register($config->getProxyAutoloader());
     }
     catch(Exception $exp) {
-      watchdog_exception('drupal_symfony_inject', $exp);
+      watchdog('drupal_symfony_inject', $exp->getMessage());
     }
   }
   else {

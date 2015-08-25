@@ -1,6 +1,6 @@
 name = Symfony Dependency Injection
-description = Symfony dependency injection for Drupal 7.
-core = 7.x
+description = Symfony dependency injection for Drupal 6.
+core = 6.x
 package = Symfony
 php = 5.3.x
 
