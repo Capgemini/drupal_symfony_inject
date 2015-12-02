@@ -38,6 +38,7 @@ function drupal_symfony_inject_load_yaml_config($proxies_path) {
 
   // Add build params.
   $build_yaml_config_params = module_invoke_all('symfony_yaml_config_params', $container_builder);
+  drupal_alter('symfony_yaml_config_params', $build_yaml_config_params);
 
   $definitions = $container_builder->getDefinitions();
   foreach ($definitions as $definition) {
