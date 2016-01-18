@@ -4,12 +4,14 @@
  * Install/upgrade hooks.
  */
 
-define('SYMFONY_CLASS_LOADER_PROXIES_DIR', 'symfony_class_loader_proxies_dir');
-
 /**
  * Implements hook_requirements().
  */
 function drupal_symfony_inject_requirements($phase) {
+  // load the main module file because we need access
+  // to SYMFONY_CLASS_LOADER_PROXIES_DIR constant
+  module_load_include('module', 'drupal_symfony_inject');
+
   $requirements = array();
   // Ensure translations don't break during installation.
   $t = get_t();
