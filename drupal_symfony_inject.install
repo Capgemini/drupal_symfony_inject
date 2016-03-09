@@ -5,6 +5,15 @@
  */
 
 /**
+ * Implements hook_install().
+ */
+function drupal_symfony_inject_install() {
+  // Set a low module weight to ensure this module is enabled before those that
+  // depend on it.
+  db_query("UPDATE {system} SET weight = -99 WHERE name = 'drupal_symfony_inject'");
+}
+
+/**
  * Implements hook_requirements().
  */
 function drupal_symfony_inject_requirements($phase) {
@@ -30,4 +39,12 @@ function drupal_symfony_inject_requirements($phase) {
   }
 
   return $requirements;
+}
+
+/**
+ * Set a low module weight to ensure this module is enabled before those that
+ * depend on it.
+ */
+function drupal_symfony_inject_update_7101() {
+  db_query("UPDATE {system} SET weight = -99 WHERE name = 'drupal_symfony_inject' AND type = 'module'");
 }
