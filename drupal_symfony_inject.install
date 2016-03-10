@@ -11,6 +11,7 @@ function drupal_symfony_inject_install() {
   // Set a low module weight to ensure this module is enabled before those that
   // depend on it.
   db_query("UPDATE {system} SET weight = -99 WHERE name = 'drupal_symfony_inject'");
+  db_query("UPDATE {system} SET weight = -100 WHERE name = 'composer_manager' AND type = 'module'");
 }
 
 /**
@@ -47,4 +48,5 @@ function drupal_symfony_inject_requirements($phase) {
  */
 function drupal_symfony_inject_update_7101() {
   db_query("UPDATE {system} SET weight = -99 WHERE name = 'drupal_symfony_inject' AND type = 'module'");
+  db_query("UPDATE {system} SET weight = -100 WHERE name = 'composer_manager' AND type = 'module'");
 }
