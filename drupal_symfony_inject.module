@@ -62,3 +62,18 @@ function _drupal_symfony_inject_clear_symfony_proxies() {
   array_map('unlink', glob("$proxies_cache_path/*.php"));
   watchdog('drupal_symfony_inject', "Symfony proxies cache cleared at $proxies_cache_path");
 }
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function drupal_symfony_inject_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'init') {
+    // Move our hook_init() implementation to the beginning of the list.
+    // This allows other modules to depend on $_drupal_symfony_di_container even
+    // as early as their own hook_init() implementations.
+    $implementations = array(
+      'composer_manager' => $implementations['composer_manager'],
+      'drupal_symfony_inject' => $implementations['drupal_symfony_inject'],
+    ) + $implementations;
+  }
+}
